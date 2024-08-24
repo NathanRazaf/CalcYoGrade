@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import userRoutes from "./routes/user.route";
 import adminRoutes from "./routes/admin.routes";
-import gradeRoutes from "./routes/grade.route";
+import gradeRoutes from "./routes/grades/grade.route";
 
 const app = express();
 app.use(express.json());

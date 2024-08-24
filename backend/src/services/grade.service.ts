@@ -93,3 +93,29 @@ export const setupGradeSystem = async (req: Request, res: Response): Promise<voi
         res.status(500).send({ message: 'Error setting up grade system', error });
     }
 };
+
+
+export const searchGradeSystems = async (req: Request, res: Response): Promise<void> => {
+    if (!req.params.query) {
+        const gradeSystems = await GradeSystem.find();
+        res.status(200).send({ gradeSystems });
+        return;
+    }
+    // Step 1: Perform a MongoDB text search
+    let textResults = await GradeSystem.find(
+        { $text: { $search: req.params.query } },
+        { score: { $meta: 'textScore' } } // Get relevance score
+    ).sort({ score: { $meta: 'textScore' } });
+
+    // Step 2: If text search yields too few results, fallback to regex
+    if (textResults.length < 3) {
+        const regexResults = await GradeSystem.find({
+            name: { $regex: new RegExp(req.params.query, 'i') }
+        });
+
+        // Merge the results, prioritizing text search results
+        textResults = [...new Set([...textResults, ...regexResults])];
+    }
+
+    res.status(200).send({ gradeSystems: textResults });
+}
