@@ -1,18 +1,18 @@
-import express from 'express';
-import swaggerJsDoc from 'swagger-jsdoc';
-import swaggerUi from 'swagger-ui-express';
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-import userRoutes from "./routes/user.route";
-import adminRoutes from "./routes/admin.routes";
-import gradeRoutes from "./routes/grade.route";
-
-const app = express();
-app.use(express.json());
-
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
+const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
+const mongoose_1 = __importDefault(require("mongoose"));
+const dotenv_1 = __importDefault(require("dotenv"));
+const user_route_1 = __importDefault(require("./routes/user.route"));
+const app = (0, express_1.default)();
+app.use(express_1.default.json());
 // Load environment variables
-dotenv.config();
-
+dotenv_1.default.config();
 const swaggerOptions = {
     swaggerDefinition: {
         openapi: '3.0.0',
@@ -25,26 +25,19 @@ const swaggerOptions = {
             {
                 name: 'users',
                 description: 'Operations related to users (e.g. login, register)'
-            },
+            }
         ],
     },
     apis: ['./src/routes/*.ts'],
 };
-
-
-
+const swaggerDocs = (0, swagger_jsdoc_1.default)(swaggerOptions);
+app.use('/', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerDocs));
 // Register routes
-app.use('/users', userRoutes);
-app.use('/admin', adminRoutes);
-app.use('/grades', gradeRoutes);
-
-
-// Serve Swagger documentation
-const swaggerDocs = swaggerJsDoc(swaggerOptions);
-app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-
+console.log('Registering user routes');
+app.use('/users', user_route_1.default);
+console.log('User routes registered');
 // Define the server's start function
-const start = async () : Promise<void> => {
+const start = async () => {
     try {
         // Connect to MongoDB
         const mongoURI = process.env.NODE_ENV === 'test' ? process.env.TEST_MONGODB_URI : process.env.MONGODB_URI;
@@ -52,22 +45,18 @@ const start = async () : Promise<void> => {
             console.error('MongoDB URI not found in environment variables');
             process.exit(1);
         }
-        await mongoose.connect(mongoURI);
+        await mongoose_1.default.connect(mongoURI);
         console.log('Connected to MongoDB successfully');
-
         // Start the Express server
         const PORT = process.env.PORT || 3000;
         app.listen(PORT, () => {
             console.log(`Server is running on port ${PORT}`);
         });
-
-
-    } catch (error : any) {
+    }
+    catch (error) {
         console.error('Error starting the application:', error.message);
         process.exit(1); // Exit if there's an error
     }
 };
-
 start();
-
-export default app;
+exports.default = app;
