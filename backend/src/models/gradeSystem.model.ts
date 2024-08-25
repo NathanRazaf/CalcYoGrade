@@ -1,14 +1,14 @@
-import mongoose, {Schema} from "mongoose";
+import {model, Schema} from "mongoose";
 
 const gradeSystemSchema = new Schema({
     name: {type: String, required: true},
-    maxPoints: {type: Number, required: true},
-    numUsers: {type: Number, required: true, default: 1},
+    maxGrade: {type: Number, required: true},
+    usedBy: {type: Number, required: true, default: 1},
     system: [
         {
-            grade: {type: String, required: true},
-            minPoints: {type: Number, required: true},
-            maxPoints: {type: Number, required: true}
+            letterGrade: {type: String, required: true},
+            minGrade: {type: Number, required: true},
+            maxGrade: {type: Number, required: true}
         }
     ]
 });
@@ -16,6 +16,6 @@ const gradeSystemSchema = new Schema({
 // Add a text index on the "name" field
 gradeSystemSchema.index({ name: 'text' });
 
-const GradeSystem = mongoose.model("GradeSystem", gradeSystemSchema, "gradeSystems");
+const GradeSystem = model("GradeSystem", gradeSystemSchema, "gradeSystems");
 
 export default GradeSystem;

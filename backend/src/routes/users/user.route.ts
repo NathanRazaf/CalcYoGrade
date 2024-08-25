@@ -1,6 +1,6 @@
-import {registerUser, loginUser} from '../services/user.service';
+import {registerUser, loginUser} from '../../services/user.service';
 import {Router} from "express";
-import {authenticate} from "../middleware/authenticate";
+import {authenticate} from "../../middleware/authenticate";
 
 const userRoutes = Router();
 

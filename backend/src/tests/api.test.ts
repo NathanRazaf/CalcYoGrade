@@ -24,7 +24,7 @@ beforeAll(
 );
 
 
-describe('User API Endpoints', () => {
+describe('User API EndGrade', () => {
 
     it('should register a new user', async () => {
         const res = await request(app)
@@ -88,7 +88,7 @@ describe('User API Endpoints', () => {
 });
 
 
-describe('Grade API Endpoints', () => {
+describe('Grade API EndGrade', () => {
 
     let gradeId: string;
     it('should create a new grade system', async () => {
@@ -106,13 +106,13 @@ describe('Grade API Endpoints', () => {
                 .post('/grades/system/add')
                 .send({
                     name: 'Test Grade System',
-                    maxPoints: 100,
+                    maxGrade: 100,
                     system: [
-                        { grade: 'A', minPoints: 90, maxPoints: 100 },
-                        { grade: 'B', minPoints: 80, maxPoints: 89 },
-                        { grade: 'C', minPoints: 70, maxPoints: 79 },
-                        { grade: 'D', minPoints: 60, maxPoints: 69 },
-                        { grade: 'F', minPoints: 0, maxPoints: 59 },
+                        { letterGrade: 'A', minGrade: 90, maxGrade: 100 },
+                        { letterGrade: 'B', minGrade: 80, maxGrade: 89 },
+                        { letterGrade: 'C', minGrade: 70, maxGrade: 79 },
+                        { letterGrade: 'D', minGrade: 60, maxGrade: 69 },
+                        { letterGrade: 'F', minGrade: 0, maxGrade: 59 },
                     ],
                 })
                 .set('Authorization', `Bearer ${token}`);
@@ -120,12 +120,12 @@ describe('Grade API Endpoints', () => {
             expect(res2.statusCode).toEqual(200);
             expect(res2.body).toHaveProperty('message', 'Grade system set up successfully');
             expect(res2.body.gradeSystem).toHaveProperty('name', 'Test Grade System');
-            expect(res2.body.gradeSystem).toHaveProperty('maxPoints', 100);
+            expect(res2.body.gradeSystem).toHaveProperty('maxGrade', 100);
             expect(res2.body.gradeSystem).toHaveProperty('system');
             gradeId = res2.body.gradeSystem._id;
     });
 
-    it('should not create a grade system with invalid minPoints and maxPoints', async () => {
+    it('should not create a grade system with invalid minGrade and maxGrade', async () => {
         // first, connect a user
          const res = await request(app)
               .post('/users/login')
@@ -140,19 +140,19 @@ describe('Grade API Endpoints', () => {
                 .post('/grades/system/add')
                 .send({
                     name: 'Test Grade System',
-                    maxPoints: 100,
+                    maxGrade: 100,
                     system: [
-                        { grade: 'A', minPoints: 90, maxPoints: 100 },
-                        { grade: 'B', minPoints: 80, maxPoints: 89 },
-                        { grade: 'C', minPoints: 70, maxPoints: 79 },
-                        { grade: 'D', minPoints: 60, maxPoints: 69 },
-                        { grade: 'F', minPoints: 59, maxPoints: 50 },
+                        { grade: 'A', minGrade: 90, maxGrade: 100 },
+                        { grade: 'B', minGrade: 80, maxGrade: 89 },
+                        { grade: 'C', minGrade: 70, maxGrade: 79 },
+                        { grade: 'D', minGrade: 60, maxGrade: 69 },
+                        { grade: 'F', minGrade: 59, maxGrade: 50 },
                     ],
                 })
                 .set('Authorization', `Bearer ${token}`);
 
             expect(res2.statusCode).toEqual(400);
-            expect(res2.body).toHaveProperty('message', 'minPoints and maxPoints must be positive and minPoints must be less than maxPoints for grade F.');
+            expect(res2.body).toHaveProperty('message', 'minGrade and maxGrade must be positive and minGrade must be less than maxGrade for grade F.');
     });
 
     it('should not create a grade system with overlapping ranges', async () => {
@@ -170,13 +170,13 @@ describe('Grade API Endpoints', () => {
             .post('/grades/system/add')
             .send({
                 name: 'Test Grade System',
-                maxPoints: 100,
+                maxGrade: 100,
                 system: [
-                    { grade: 'A', minPoints: 90, maxPoints: 100 },
-                    { grade: 'B', minPoints: 80, maxPoints: 89 },
-                    { grade: 'C', minPoints: 70, maxPoints: 79 },
-                    { grade: 'D', minPoints: 60, maxPoints: 69 },
-                    { grade: 'F', minPoints: 65, maxPoints: 75 },
+                    { letterGrade: 'A', minGrade: 90, maxGrade: 100 },
+                    { letterGrade: 'B', minGrade: 80, maxGrade: 89 },
+                    { letterGrade: 'C', minGrade: 70, maxGrade: 79 },
+                    { letterGrade: 'D', minGrade: 60, maxGrade: 69 },
+                    { letterGrade: 'F', minGrade: 65, maxGrade: 75 },
                 ],
             })
             .set('Authorization', `Bearer ${token}`);
@@ -205,7 +205,7 @@ describe('Grade API Endpoints', () => {
         expect(res2.statusCode).toEqual(200);
         expect(res2.body).toHaveProperty('message', 'Grade system set up successfully');
         expect(res2.body.gradeSystem).toHaveProperty('name', 'Test Grade System');
-        expect(res2.body.gradeSystem).toHaveProperty('maxPoints', 100);
-        expect(res2.body.gradeSystem).toHaveProperty('numUsers', 2);
+        expect(res2.body.gradeSystem).toHaveProperty('maxGrade', 100);
+        expect(res2.body.gradeSystem).toHaveProperty('usedBy', 2);
     });
 });

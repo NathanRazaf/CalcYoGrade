@@ -19,17 +19,17 @@ export const setupGradeSystem = async (req: Request, res: Response): Promise<voi
                 return;
             }
 
-            // if the user already had a grade system before, decrement the numUsers of that grade system
+            // if the user already had a grade system before, decrement the usedBy of that grade system
             if (user.gradeSysId) {
                 const prevGradeSystem = await GradeSystem.findById(user.gradeSysId);
                 if (prevGradeSystem) {
-                    prevGradeSystem.numUsers -= 1;
+                    prevGradeSystem.usedBy -= 1;
                     await prevGradeSystem.save();
                 }
             }
 
-            // increment the numUsers of the new grade system
-            gradeSystem.numUsers += 1;
+            // increment the usedBy of the new grade system
+            gradeSystem.usedBy += 1;
             await gradeSystem.save();
 
             // Update the user with the new grade system ID
@@ -39,15 +39,15 @@ export const setupGradeSystem = async (req: Request, res: Response): Promise<voi
             return;
         }
 
-        // Sort the system array by minPoints
+        // Sort the system array by minGrade
         let system = req.body.system;
-        system = system.sort((a: any, b: any) => a.minPoints - b.minPoints);
+        system = system.sort((a: any, b: any) => a.minGrade - b.minGrade);
 
-        // Check for minPoints and maxPoints validity
+        // Check for minGrade and maxGrade validity
         for (let i = 0; i < system.length; i++) {
-            if (system[i].minPoints < 0 || system[i].maxPoints < 0 || system[i].minPoints > system[i].maxPoints) {
+            if (system[i].minGrade < 0 || system[i].maxGrade < 0 || system[i].minGrade > system[i].maxGrade) {
                 res.status(400).send({
-                    message: `minPoints and maxPoints must be positive and minPoints must be less than maxPoints for grade ${system[i].grade}.`
+                    message: `minGrade and maxGrade must be positive and minGrade must be less than maxGrade for grade ${system[i].grade}.`
                 });
                 return;
             }
@@ -55,9 +55,9 @@ export const setupGradeSystem = async (req: Request, res: Response): Promise<voi
 
         // Check for overlapping ranges
         for (let i = 0; i < system.length - 1; i++) {
-            if (system[i].maxPoints > system[i + 1].minPoints) {
+            if (system[i].maxGrade > system[i + 1].minGrade) {
                 res.status(400).send({
-                    message: `Grades ${system[i].grade} and ${system[i + 1].grade} have overlapping ranges.`
+                    message: `Grades ${system[i].letterGrade} and ${system[i + 1].letterGrade} have overlapping ranges.`
                 });
                 return;
             }
@@ -66,18 +66,18 @@ export const setupGradeSystem = async (req: Request, res: Response): Promise<voi
         // Create a grade system
         let gradeSystem = new GradeSystem({
             name: req.body.name,
-            maxPoints: req.body.maxPoints,
+            maxGrade: req.body.maxGrade,
             system: system // Use the sorted system
         });
 
         // Save the grade system
         await gradeSystem.save();
 
-        // if the user already had a grade system, decrement the numUsers of that grade system
+        // if the user already had a grade system, decrement the usedBy of that grade system
         if (user.gradeSysId) {
             const prevGradeSystem = await GradeSystem.findById(user.gradeSysId);
             if (prevGradeSystem) {
-                prevGradeSystem.numUsers -= 1;
+                prevGradeSystem.usedBy -= 1;
                 await prevGradeSystem.save();
             }
         }

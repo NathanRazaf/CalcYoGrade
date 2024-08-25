@@ -1,6 +1,6 @@
 import {Router} from "express";
 import {authenticate} from "../../middleware/authenticate";
-import {searchGradeSystems, setupGradeSystem} from "../../services/grade.service";
+import {searchGradeSystems, setupGradeSystem} from "../../services/grade.system.service";
 
 const gradeSystemRoutes = Router();
 

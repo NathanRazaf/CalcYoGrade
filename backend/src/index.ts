@@ -3,9 +3,10 @@ import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import userRoutes from "./routes/user.route";
-import adminRoutes from "./routes/admin.routes";
+import userRoutes from "./routes/users/user.route";
+import adminRoutes from "./routes/users/admin.routes";
 import gradeRoutes from "./routes/grades/grade.route";
+import courseRoutes from "./routes/courses/course.route";
 
 const app = express();
 app.use(express.json());
@@ -37,6 +38,7 @@ const swaggerOptions = {
 app.use('/users', userRoutes);
 app.use('/admin', adminRoutes);
 app.use('/grades', gradeRoutes);
+app.use('/courses', courseRoutes);
 
 
 // Serve Swagger documentation
