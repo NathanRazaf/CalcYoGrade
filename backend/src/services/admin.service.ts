@@ -22,7 +22,6 @@ export const deleteAllData = async (req: Request, res: Response) => {
             } else {
                 // For other collections, delete all documents
                 await mongoose.connection.db.collection(collectionName).deleteMany({});
-                console.log(`Deleted all documents in collection: ${collectionName}`);
             }
         }
 

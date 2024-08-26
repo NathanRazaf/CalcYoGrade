@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/models/user.model.ts</title>
+    <title>Code coverage report for src/models/course.model.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../prettify.css" />
     <link rel="stylesheet" href="../../base.css" />
@@ -19,13 +19,13 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/models</a> user.model.ts</h1>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/models</a> course.model.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>4/4</span>
+                <span class='fraction'>5/5</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>4/4</span>
+                <span class='fraction'>5/5</span>
             </div>
         
             
@@ -90,8 +90,7 @@
 <a name='L25'></a><a href='#L25'>25</a>
 <a name='L26'></a><a href='#L26'>26</a>
 <a name='L27'></a><a href='#L27'>27</a>
-<a name='L28'></a><a href='#L28'>28</a>
-<a name='L29'></a><a href='#L29'>29</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L28'></a><a href='#L28'>28</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -114,40 +113,38 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">import {model, Schema} from "mongoose";
+<span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">import mongoose, {Schema} from "mongoose";
 &nbsp;
-const userSchema = new Schema({
-    username: {type: String, required: true, unique: true},
-    password: {type: String, required: true}, // It's going to be bcrypted
-    gradeSysId: {type: String},
-    academicPath: [
+const courseSchema = new Schema({
+    schoolName: { type: String, required: true },
+    courseCode: { type: String, required: true },
+    courseName: { type: String, required: true },
+    weight: { type: Number, required: true },
+    maxPoints: { type: Number, required: true },
+    numStudents: { type: Number, default: 1 },
+    allGrades: [
         {
-            semester: {type: String, required: true},
-            courses: [
-                {
-                    courseId: {type: String, required: true},
-                    courseEvalId: {type: String},
-                    assignments: [
-                        {
-                            assignmentId: { type: String, required: true },  // ID of the assignment from CourseEval
-                            grade: { type: Number, required: true }  // Grade for this specific assignment
-                        }
-                    ],
-                    projectedFinalGrade: {type: Number, required: true, default: 0},
-                }
-            ]
+            semester: { type: String, required: true },
+            grades: {
+                type: Map,
+                of: new Schema({
+                    grade: { type: Number, required: true }  // The student's grade
+                })
+            }
         }
     ]
 });
 &nbsp;
-const User = model("User", userSchema, "users");
+// Add a text index on the "courseCode", "courseName", and "schoolName" fields
+courseSchema.index({ courseCode: 'text', courseName: 'text', schoolName: 'text' });
 &nbsp;
-export default User;</pre></td></tr></table></pre>
+const Course = mongoose.model("Course", courseSchema, "courses");
+&nbsp;
+export default Course;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->

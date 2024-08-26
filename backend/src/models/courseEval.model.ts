@@ -1,6 +1,7 @@
 import {model, Schema} from "mongoose";
 
 const courseEvalSchema = new Schema({
+    name: { type: String, required: true },
     courseId: { type: String, required: true },
     semester: { type: String, required: true },
     assignments: [

@@ -5,7 +5,7 @@ import courseEvalRoutes from "./course.eval.route";
 
 const courseRoutes = Router();
 
-courseRoutes.use('/eval', courseEvalRoutes);
 courseRoutes.post('/add', authenticate, addCourse);
+courseRoutes.use('/eval', courseEvalRoutes);
 
 export default courseRoutes;

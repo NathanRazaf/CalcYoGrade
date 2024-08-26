@@ -96,26 +96,33 @@ export const setupGradeSystem = async (req: Request, res: Response): Promise<voi
 
 
 export const searchGradeSystems = async (req: Request, res: Response): Promise<void> => {
-    if (!req.params.query) {
+    const query = req.query.query;
+
+    if (!query) {
         const gradeSystems = await GradeSystem.find();
         res.status(200).send({ gradeSystems });
         return;
     }
+
     // Step 1: Perform a MongoDB text search
     let textResults = await GradeSystem.find(
-        { $text: { $search: req.params.query } },
-        { score: { $meta: 'textScore' } } // Get relevance score
+        { $text: { $search: query as string } },
+        { score: { $meta: 'textScore' } }
     ).sort({ score: { $meta: 'textScore' } });
 
     // Step 2: If text search yields too few results, fallback to regex
     if (textResults.length < 3) {
         const regexResults = await GradeSystem.find({
-            name: { $regex: new RegExp(req.params.query, 'i') }
+            name: { $regex: new RegExp(query as string, 'i') }
         });
 
-        // Merge the results, prioritizing text search results
-        textResults = [...new Set([...textResults, ...regexResults])];
+        // Merge results and filter out duplicates based on `_id`
+        const mergedResults = [...textResults, ...regexResults];
+        textResults = mergedResults.filter((value, index, self) =>
+            index === self.findIndex((v) => v._id.toString() === value._id.toString())
+        );
     }
 
     res.status(200).send({ gradeSystems: textResults });
-}
+};
+

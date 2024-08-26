@@ -12,9 +12,7 @@ const courseSchema = new Schema({
             semester: { type: String, required: true },
             grades: {
                 type: Map,
-                of: new Schema({
-                    grade: { type: Number, required: true }  // The student's grade
-                })
+                of: Number // Key is the user ID, value is the grade
             }
         }
     ]
@@ -25,4 +23,4 @@ courseSchema.index({ courseCode: 'text', courseName: 'text', schoolName: 'text' 
 
 const Course = mongoose.model("Course", courseSchema, "courses");
 
-export default Course;
+export default Course

@@ -6,7 +6,7 @@
     "prebuild": "npm install",
     "build": "tsc",
     "start": "ts-node-dev src/index.ts",
-    "test": "NODE_ENV=test jest --coverage --detectOpenHandles --forceExit"
+    "test": "NODE_ENV=test jest --detectOpenHandles --forceExit --runInBand"
   },
   "keywords": [],
   "author": "",
