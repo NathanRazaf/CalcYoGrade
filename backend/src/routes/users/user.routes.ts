@@ -1,7 +1,6 @@
-import {registerUser, loginUser} from '../../services/user.service';
+import {registerUser, loginUser, getUser} from '../../services/users/user.service';
 import {Router} from "express";
 import {authenticate} from "../../middleware/authenticate";
-import User from "../../models/user.model";
 
 const userRoutes = Router();
 
@@ -72,13 +71,6 @@ userRoutes.post('/register', registerUser);
  */
 userRoutes.post('/login', loginUser);
 
-userRoutes.get('/me', authenticate, async (req, res) => {
-   const user = await User.findById(req.userId);
-    if (!user) {
-         res.status(404).send({message: 'User not found.'});
-         return;
-    }
-    res.status(200).send(user);
-});
+userRoutes.get('/me', authenticate, getUser);
 
 export default userRoutes;

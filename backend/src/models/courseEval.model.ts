@@ -10,7 +10,7 @@ const courseEvalSchema = new Schema({
             weight: { type: Number, required: true }  // e.g., 50%, 30%, etc.
         }
     ],
-    usedBy: { type: Number, default: 1 },  // Number of users using this division
+    usedBy: { type: Number, default: 0 },  // Number of users using this division
 });
 
 // Add a text index on the "courseId" field

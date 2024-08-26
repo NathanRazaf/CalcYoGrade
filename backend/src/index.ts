@@ -3,10 +3,10 @@ import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import userRoutes from "./routes/users/user.route";
+import userRoutes from "./routes/users/user.routes";
 import adminRoutes from "./routes/users/admin.routes";
-import gradeRoutes from "./routes/grades/grade.route";
-import courseRoutes from "./routes/courses/course.route";
+import gradeRoutes from "./routes/grades/grade.routes";
+import courseRoutes from "./routes/courses/course.routes";
 
 const app = express();
 app.use(express.json());

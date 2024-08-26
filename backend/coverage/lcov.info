@@ -147,7 +147,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:src/routes/courses/course.eval.route.ts
+SF:src/routes/courses/course.eval.routes.ts
 FNF:0
 FNH:0
 DA:1,1
@@ -162,7 +162,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:src/routes/courses/course.route.ts
+SF:src/routes/courses/course.routes.ts
 FNF:0
 FNH:0
 DA:1,1
@@ -179,7 +179,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:src/routes/grades/grade.route.ts
+SF:src/routes/grades/grade.routes.ts
 FNF:0
 FNH:0
 DA:1,1
@@ -224,7 +224,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:src/routes/users/user.route.ts
+SF:src/routes/users/user.routes.ts
 FNF:0
 FNH:0
 DA:1,1

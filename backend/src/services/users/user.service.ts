@@ -1,9 +1,8 @@
-import User from '../models/user.model';
+import User from '../../models/user.model';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { Request, Response } from 'express';
-import GradeSystem from "../models/gradeSystem.model";
 
 dotenv.config();
 
@@ -66,4 +65,17 @@ export const loginUser = async (req: Request, res: Response) : Promise<void> => 
     }
 };
 
+export const getUser = async (req: Request, res: Response) => {
+    try {
+        const user = await User.findById(req.userId);
+        if (!user) {
+            res.status(404).send({ message: 'User not found.' });
+            return;
+        }
 
+        res.status(200).send(user);
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        res.status(500).send({ message: 'Internal server error.' });
+    }
+}

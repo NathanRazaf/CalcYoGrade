@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import User from "../models/user.model";
-import Course from "../models/course.model";
-import {updateUserGrades} from "./grade.service";
+import User from "../../models/user.model";
+import Course from "../../models/course.model";
+import {updateUserGrades} from "../grades/grade.service";
 
 export const addCourse = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -157,9 +157,117 @@ export const removeCourse = async (req: Request, res: Response): Promise<void> =
 
         await course.save();
 
-
+        res.status(200).send({ message: 'Course removed successfully.', user });
     } catch (error) {
-
+        console.error('Error removing course:', error);
+        res.status(500).send({ message: 'Internal server error.' });
     }
 }
 
+export const searchCourses = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const query = req.query.query;
+
+        if (!query) {
+            const courses = await Course.find();
+            res.status(200).send({ courses });
+            return;
+        }
+
+        // Step 1: Perform a MongoDB text search
+        let textResults = await Course.find(
+            { $text: { $search: query as string } },
+            { score: { $meta: 'textScore' } }
+        ).sort({ score: { $meta: 'textScore' } });
+
+        // Step 2: If text search yields too few results, fallback to regex
+        if (textResults.length < 5) {
+            const regexResults = await Course.find({
+                $or: [
+                    { courseCode: { $regex: new RegExp(query as string, 'i') } },
+                    { courseName: { $regex: new RegExp(query as string, 'i') } },
+                    { schoolName: { $regex: new RegExp(query as string, 'i') } }
+                ]
+            });
+
+            // Merge results and filter out duplicates based on `_id`
+            const mergedResults = [...textResults, ...regexResults];
+            textResults = mergedResults.filter((value, index, self) =>
+                index === self.findIndex((v) => v._id.toString() === value._id.toString())
+            );
+        }
+
+        res.status(200).send({ courses: textResults });
+    } catch (error) {
+        console.error('Error searching courses:', error);
+        res.status(500).send({ message: 'Internal server error.' });
+    }
+};
+
+export const getCourseStats = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const courseId = req.params.courseId;
+
+        // Find the course by its ID
+        const course = await Course.findById(courseId);
+        if (!course) {
+            res.status(404).send({ message: 'Course not found.' });
+            return;
+        }
+
+        // Calculate total grade, number of students, and collect all grades
+        let totalGrade = 0;
+        let totalStudents = 0;
+        let allGrades: number[] = [];
+
+        for (let i = 0; i < course.allGrades.length; i++) {
+            const gradesMap = course.allGrades[i].grades;
+            for (const grade of gradesMap!.values()) {
+                allGrades.push(grade);
+                totalGrade += grade;
+                totalStudents += 1;
+            }
+        }
+
+        // Calculate the average grade
+        const averageGrade = totalStudents > 0 ? totalGrade / totalStudents : 0;
+
+        // Calculate the median grade
+        allGrades.sort((a, b) => a - b);
+        let medianGrade = 0;
+        if (totalStudents > 0) {
+            const mid = Math.floor(totalStudents / 2);
+            medianGrade = totalStudents % 2 === 0 ? (allGrades[mid - 1] + allGrades[mid]) / 2 : allGrades[mid];
+        }
+
+        // Calculate grade distribution (using maxPoints from the course)
+        const gradeDistribution = getGradeDistribution(allGrades, course.maxPoints);
+
+        res.status(200).send({ averageGrade, medianGrade, gradeDistribution });
+    } catch (error) {
+        console.error('Error getting course stats:', error);
+        res.status(500).send({ message: 'Internal server error.' });
+    }
+}
+
+// Helper function to calculate grade distribution
+function getGradeDistribution(grades: number[], maxPoints: number): number[] {
+    const range = maxPoints / 5;
+    const distribution = [0, 0, 0, 0, 0];
+
+    grades.forEach(grade => {
+        if (grade >= 0 && grade < range) {
+            distribution[0]++;
+        } else if (grade >= range && grade < 2 * range) {
+            distribution[1]++;
+        } else if (grade >= 2 * range && grade < 3 * range) {
+            distribution[2]++;
+        } else if (grade >= 3 * range && grade < 4 * range) {
+            distribution[3]++;
+        } else if (grade >= 4 * range && grade <= maxPoints) {
+            distribution[4]++;
+        }
+    });
+
+    return distribution;
+}

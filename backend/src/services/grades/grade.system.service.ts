@@ -1,6 +1,6 @@
 import {Request, Response} from "express";
-import User from "../models/user.model";
-import GradeSystem from "../models/gradeSystem.model";
+import User from "../../models/user.model";
+import GradeSystem from "../../models/gradeSystem.model";
 
 export const setupGradeSystem = async (req: Request, res: Response): Promise<void> => {
     try {

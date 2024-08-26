@@ -1,6 +1,6 @@
 import {Router} from "express";
 import {adminAuth} from "../../middleware/authenticate";
-import {deleteAllData} from "../../services/admin.service";
+import {deleteAllData} from "../../services/users/admin.service";
 
 const adminRoutes = Router();
 

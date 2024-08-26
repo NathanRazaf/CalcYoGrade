@@ -109,7 +109,7 @@
     </package>
     <package name="src.routes.courses">
       <metrics statements="14" coveredstatements="14" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-      <file name="course.eval.route.ts" path="/home/asp3rity/Repositories/CalcYoGrade/backend/src/routes/courses/course.eval.route.ts">
+      <file name="course.eval.routes.ts" path="/home/asp3rity/Repositories/CalcYoGrade/backend/src/routes/courses/course.eval.routes.ts">
         <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
@@ -118,7 +118,7 @@
         <line num="7" count="1" type="stmt"/>
         <line num="9" count="1" type="stmt"/>
       </file>
-      <file name="course.route.ts" path="/home/asp3rity/Repositories/CalcYoGrade/backend/src/routes/courses/course.route.ts">
+      <file name="course.routes.ts" path="/home/asp3rity/Repositories/CalcYoGrade/backend/src/routes/courses/course.routes.ts">
         <metrics statements="8" coveredstatements="8" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
@@ -132,7 +132,7 @@
     </package>
     <package name="src.routes.grades">
       <metrics statements="12" coveredstatements="12" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-      <file name="grade.route.ts" path="/home/asp3rity/Repositories/CalcYoGrade/backend/src/routes/grades/grade.route.ts">
+      <file name="grade.routes.ts" path="/home/asp3rity/Repositories/CalcYoGrade/backend/src/routes/grades/grade.routes.ts">
         <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
@@ -162,7 +162,7 @@
         <line num="7" count="1" type="stmt"/>
         <line num="10" count="1" type="stmt"/>
       </file>
-      <file name="user.route.ts" path="/home/asp3rity/Repositories/CalcYoGrade/backend/src/routes/users/user.route.ts">
+      <file name="user.routes.ts" path="/home/asp3rity/Repositories/CalcYoGrade/backend/src/routes/users/user.routes.ts">
         <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>

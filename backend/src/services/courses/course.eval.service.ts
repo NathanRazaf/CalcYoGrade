@@ -1,6 +1,7 @@
 import {Request, Response} from "express";
-import User from "../models/user.model";
-import CourseEval from "../models/courseEval.model";
+import User from "../../models/user.model";
+import CourseEval from "../../models/courseEval.model";
+
 
 export const setCourseEval = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -31,6 +32,9 @@ export const setCourseEval = async (req: Request, res: Response): Promise<void> 
             return;
         }
         const course = semester.courses[courseIndex];
+
+        // Clear the assignments first
+        user.set(`academicPath.${semesterIndex}.courses.${courseIndex}.assignments`, []);
 
         // Populate the course's assignments with the course evaluation's assignments
         for (let i = 0; i < courseEval.assignments.length; i++) {
@@ -101,3 +105,44 @@ export const createCourseEval = async (req: Request, res: Response): Promise<voi
         return;
     }
 };
+
+export const searchCourseEvals = async (req: Request, res: Response): Promise<void> => {
+    try {
+        // Single course evaluation
+        if (req.query.courseEvalId) {
+            const courseEvals = await CourseEval.findById(req.query.courseEvalId);
+            if (!courseEvals) {
+                res.status(404).send({ message: 'Course evaluation not found.' });
+                return;
+            }
+            res.status(200).send(courseEvals);
+            return;
+        }
+
+        let courseEvals;
+        if (req.query.courseId) {
+            // Course evaluations of a specific course
+            courseEvals = await CourseEval.find({ courseId: req.query.courseId });
+        } else {
+            // All course evaluations
+            courseEvals = await CourseEval.find();
+        }
+
+        // Search by semester
+        if (req.query.semester) {
+            courseEvals = courseEvals.filter((courseEval: any) => courseEval.semester === req.query.semester);
+        }
+
+        // Search by name
+        if (req.query.name) {
+            courseEvals = courseEvals.filter((courseEval: any) => courseEval.name.toLowerCase().includes(req.query.name!.toString().toLowerCase()));
+        }
+
+        // Order by usedBy in descending order
+        courseEvals = courseEvals.sort((a: any, b: any) => b.usedBy - a.usedBy);
+
+        res.status(200).send(courseEvals);
+    } catch (error) {
+        res.status(500).send({ message: 'Internal server error', error });
+    }
+}

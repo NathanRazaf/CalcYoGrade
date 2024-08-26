@@ -16,7 +16,7 @@ beforeAll(
                 password: process.env.ADMIN_PASSWORD,
             });
         const adminToken = res.body.token;
-        const res2 = await request(app)
+        await request(app)
             .delete('/admin/db/clear')
             .set('Authorization', `Bearer ${adminToken}`);
     }
@@ -326,7 +326,6 @@ describe('Grade setting and updating', () => {
                 courseId: courseId,
                 assignmentId: user.body.academicPath[0].courses[0].assignments[1]._id,
                 grade: 85,
-                isFinalGrade: true,
             })
             .set('Authorization', `Bearer ${token1}`);
 
@@ -334,43 +333,32 @@ describe('Grade setting and updating', () => {
         expect(res.body).toHaveProperty('message', 'Grade updated successfully.');
     });
 
-    it('should set 45 for the Midterm Exam grade', async () => {
-        const user = await request(app)
-            .get('/users/me')
-            .set('Authorization', `Bearer ${token2}`);
-
+    it('should set the final grade for the course', async () => {
         const res = await request(app)
-            .post('/grades/set')
+            .post('/grades/confirm')
             .send({
                 semester: 'Winter 2024',
                 courseId: courseId,
-                assignmentId: user.body.academicPath[0].courses[0].assignments[0]._id,
-                grade: 45,
-            })
-            .set('Authorization', `Bearer ${token2}`);
-
-        expect(res.statusCode).toEqual(200);
-        expect(res.body).toHaveProperty('message', 'Grade updated successfully.');
-    });
-
-    it('should set 0 for the Final Exam grade', async () => {
-        const user = await request(app)
-            .get('/users/me')
-            .set('Authorization', `Bearer ${token2}`);
-
-        const res = await request(app)
-            .post('/grades/set')
-            .send({
-                semester: 'Winter 2024',
-                courseId: courseId,
-                assignmentId: user.body.academicPath[0].courses[0].assignments[1]._id,
-                grade: 0,
                 isFinalGrade: true,
             })
-            .set('Authorization', `Bearer ${token2}`);
+            .set('Authorization', `Bearer ${token1}`);
 
-        console.log(res.body);
         expect(res.statusCode).toEqual(200);
-        expect(res.body).toHaveProperty('message', 'Grade updated successfully.');
+        expect(res.body).toHaveProperty('message', 'Final grade status updated successfully.');
     });
+});
+
+describe('Removing course evaluations and courses', () => {
+   it('should remove a course from a user', async () => {
+         const res = await request(app)
+              .delete('/courses/remove')
+              .send({
+                semester: 'Winter 2024',
+                courseId: courseId,
+              })
+              .set('Authorization', `Bearer ${token1}`);
+
+         expect(res.statusCode).toEqual(200);
+         expect(res.body).toHaveProperty('message', 'Course removed successfully.');
+   });
 });

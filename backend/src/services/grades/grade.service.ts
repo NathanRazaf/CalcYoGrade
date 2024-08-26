@@ -1,72 +1,64 @@
-import User from "../models/user.model";
+import User from "../../models/user.model";
 import {Request, Response} from "express";
-import Course from "../models/course.model";
+import Course from "../../models/course.model";
 
-export const setGradeAssignment = async (req: Request, res: Response) : Promise<void> => {
+// Set grade for an assignment
+export const setGradeAssignment = async (req: Request, res: Response): Promise<void> => {
     try {
-        // Fetch the user
-        const user = await User.findById(req.userId);
-        if (!user) {
-            res.status(404).send({ message: 'User not found' });
-            return;
-        }
-
-        if (!req.body.semester) {
-            res.status(400).send({ message: 'Semester is required.' });
-            return;
-        }
-
-        if (!req.body.courseId) {
-            res.status(400).send({ message: 'Course ID is required.' });
-            return;
-        }
-
         if (!req.body.assignmentId) {
             res.status(400).send({ message: 'Assignment ID is required.' });
             return;
         }
 
-        if (!req.body.grade && req.body.grade !== 0) {
+        if (req.body.grade === undefined) {
             res.status(400).send({ message: 'Grade is required.' });
             return;
         }
 
-        const semester = user.academicPath.find((semester: any) => semester.semester === req.body.semester);
-        if (!semester) {
-            res.status(404).send({ message: 'Semester not found' });
-            return;
-        }
+        const data = await fetchUserSemesterCourse(req, res);
+        if (!data) return;
 
-        const course = semester.courses.find((course: any) => course.courseId == req.body.courseId);
-        if (!course) {
-            res.status(404).send({ message: 'Course not found' });
-            return;
-        }
-
-        const assignment = course.assignments
-            .find((assignment: any) => assignment.id == req.body.assignmentId);
+        const { user, course } = data;
+        const assignment = course.assignments.find((assignment: any) => assignment.id == req.body.assignmentId);
         if (!assignment) {
             res.status(404).send({ message: 'Assignment not found' });
             return;
-        }
-
-        if (req.body.isFinalGrade !== undefined) {
-            course.isFinalGrade = req.body.isFinalGrade;
         }
 
         assignment.grade = req.body.grade;
         await user.save();
 
         await updateUserGrades(req.userId!);
-
         res.status(200).send({ message: 'Grade updated successfully.' });
     } catch (error) {
         console.error('Error setting grade:', error);
         res.status(500).send({ message: 'Internal server error.' });
     }
-}
+};
 
+// Set final grade status
+export const setIsFinalGrade = async (req: Request, res: Response): Promise<void> => {
+    try {
+        if (req.body.isFinalGrade === undefined) {
+            res.status(400).send({ message: 'isFinalGrade is required.' });
+            return;
+        }
 
+        const data = await fetchUserSemesterCourse(req, res);
+        if (!data) return;
+
+        const { user, course } = data;
+
+        course.isFinalGrade = req.body.isFinalGrade;
+        await user.save();
+
+        await updateUserGrades(req.userId!);
+        res.status(200).send({ message: 'Final grade status updated successfully.' });
+    } catch (error) {
+        console.error('Error setting final grade status:', error);
+        res.status(500).send({ message: 'Internal server error.' });
+    }
+};
 
 
 export const updateUserGrades = async (userId: string) : Promise<void> => {
@@ -131,3 +123,37 @@ export const updateUserGrades = async (userId: string) : Promise<void> => {
         console.error('Error updating user grades:', error);
     }
 }
+
+
+// Helper function to fetch user, semester, and course
+const fetchUserSemesterCourse = async (req: Request, res: Response) => {
+    const user = await User.findById(req.userId);
+    if (!user) {
+        res.status(404).send({ message: 'User not found.' });
+        return null;
+    }
+
+    if (!req.body.semester) {
+        res.status(400).send({ message: 'Semester is required.' });
+        return null;
+    }
+
+    if (!req.body.courseId) {
+        res.status(400).send({ message: 'Course ID is required.' });
+        return null;
+    }
+
+    const semester = user.academicPath.find((semester: any) => semester.semester === req.body.semester);
+    if (!semester) {
+        res.status(404).send({ message: 'Semester not found' });
+        return null;
+    }
+
+    const course = semester.courses.find((course: any) => course.courseId == req.body.courseId);
+    if (!course) {
+        res.status(404).send({ message: 'Course not found' });
+        return null;
+    }
+
+    return { user, semester, course };
+};
