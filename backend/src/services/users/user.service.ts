@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { Request, Response } from 'express';
+import Course from "../../models/course.model";
 
 dotenv.config();
 
@@ -76,6 +77,73 @@ export const getUser = async (req: Request, res: Response) => {
         res.status(200).send(user);
     } catch (error) {
         console.error('Error fetching user:', error);
+        res.status(500).send({ message: 'Internal server error.' });
+    }
+}
+
+export const getUserAcademicPath = async (req: Request, res: Response) => {
+    try {
+        const user = await User.findById(req.userId);
+        if (!user) {
+            res.status(404).send({ message: 'User not found.' });
+            return;
+        }
+
+        let result = [];
+
+        for (let i = 0; i < user.academicPath.length; i++) {
+            let semester = user.academicPath[i];
+
+            // Explicitly define the type of obj and courses
+            let obj: {
+                semester: string,
+                courses: Array<{
+                    courseName: string,
+                    courseCode: string,
+                    schoolName: string,
+                    weight: number,
+                    maxPoints: number,
+                    assignments: {
+                        name: string,
+                        weight: number,
+                        grade: number
+                    }[],
+                    projectedFinalGrade: number,
+                    isFinalGrade?: boolean
+                }>
+            } = {
+                semester: semester.semester,
+                courses: [],  // Now TypeScript knows it's an array of objects
+            };
+
+            for (let j = 0; j < semester.courses.length; j++) {
+                let course = semester.courses[j];
+                const trueCourse = await Course.findById(course.courseId);
+                if (!trueCourse) {
+                    res.status(404).send({ message: 'Course not found.' });
+                    return;
+                }
+
+                let courseObj = {
+                    courseName: trueCourse.courseName,
+                    courseCode: trueCourse.courseCode,
+                    schoolName: trueCourse.schoolName,
+                    weight: trueCourse.weight,
+                    maxPoints: trueCourse.maxPoints,
+                    assignments: course.assignments,
+                    projectedFinalGrade: course.projectedFinalGrade,
+                    isFinalGrade: course.isFinalGrade,
+                };
+
+                obj.courses.push(courseObj);
+            }
+
+            result.push(obj);
+        }
+
+        res.status(200).send(result);
+    } catch (error) {
+        console.error('Error fetching user academic path:', error);
         res.status(500).send({ message: 'Internal server error.' });
     }
 }

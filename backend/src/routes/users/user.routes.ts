@@ -1,4 +1,4 @@
-import {registerUser, loginUser, getUser} from '../../services/users/user.service';
+import {registerUser, loginUser, getUser, getUserAcademicPath} from '../../services/users/user.service';
 import {Router} from "express";
 import {authenticate} from "../../middleware/authenticate";
 
@@ -72,5 +72,7 @@ userRoutes.post('/register', registerUser);
 userRoutes.post('/login', loginUser);
 
 userRoutes.get('/me', authenticate, getUser);
+
+userRoutes.get('/my-academic-path', authenticate, getUserAcademicPath);
 
 export default userRoutes;
